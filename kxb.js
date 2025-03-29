@@ -24,8 +24,15 @@
         const canvas = document.createElement('canvas');
         canvas.style.width = '100%';
         canvas.style.height = '500px';
-        canvas.innerText = 'test';
+
+        // canvasの上にテキストを表示するために、divを追加
+        const textDiv = document.createElement('div');
+        textDiv.innerText = 'test';
+        spaceElement.appendChild(textDiv); // ←まずdivを追加
+
         spaceElement.appendChild(canvas);
+
+
 
         Promise.all([
             loadScript('https://cdn.babylonjs.com/babylon.js'),
