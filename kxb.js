@@ -1,4 +1,4 @@
-//2349
+// 2357
 (function () {
     'use strict';
   
@@ -14,16 +14,13 @@
     kintone.events.on('app.record.detail.show', function (event) {
       const record = event.record;
   
-      // ✅ 添付ファイルフィールドのフィールドコードを確認（例：'glb'）
-      const fileField = record['glb'];
+      const fileField = record['glb']; // ← フィールドコード正しく！
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.log("GLBファイルが添付されていません。");
         return;
       }
   
       const fileKey = fileField.value[0].fileKey;
-      const glbUrl = `${location.origin}/k/v1/file.json?fileKey=${fileKey}`;
-      console.log("取得するGLBファイルURL（絶対）:", glbUrl);
   
       const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
       const canvas = document.createElement('canvas');
@@ -42,20 +39,17 @@
         camera.attachControl(canvas, true);
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-        // ✅ 認証付きでファイルを取得するためのヘッダー
-        const headers = {
-          'X-Requested-With': 'XMLHttpRequest'
-        };
-  
-        kintone.proxy(glbUrl, 'GET', headers, {}, 
-          function (body, status, headers) {
-            if (status !== 200) {
-              console.error("Proxy Error: Status", status);
-              return;
+        // ✅ fileKey からファイルを取得！
+        kintone.api('/k/v1/file.json', 'GET', { fileKey: fileKey })
+          .then(response => {
+            const base64 = response.file;
+            const binary = atob(base64);
+            const len = binary.length;
+            const buffer = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+              buffer[i] = binary.charCodeAt(i);
             }
-  
-            const byteArray = new Uint8Array(body);
-            const blob = new Blob([byteArray], { type: 'model/gltf-binary' });
+            const blob = new Blob([buffer], { type: 'model/gltf-binary' });
             const blobUrl = URL.createObjectURL(blob);
   
             BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
@@ -64,11 +58,10 @@
             }, null, function (scene, message) {
               console.error("Babylon.js Load Error:", message);
             });
-          },
-          function (error) {
-            console.error("Proxy Fetch Error:", error);
-          }
-        );
+          })
+          .catch(error => {
+            console.error("kintone.api file fetch error:", error);
+          });
   
         window.addEventListener('resize', () => {
           engine.resize();
