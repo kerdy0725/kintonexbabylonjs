@@ -13,7 +13,7 @@
     kintone.events.on('app.record.detail.show', function(event) {
         const record = event.record;
 
-        const fileField = record['添付ファイルフィールドのフィールドコード'].value;
+        const fileField = record['glb'].value;
         if (fileField.length === 0) {
             console.log("GLBファイルが添付されていません。");
             return;
@@ -24,6 +24,12 @@
         const canvas = document.createElement('canvas');
         canvas.style.width = '100%';
         canvas.style.height = '500px';
+
+        // canvasの上にテキストを表示するために、divを追加
+        const textDiv = document.createElement('div');
+        textDiv.innerText = 'kintone x Babylon.js';
+
+        spaceElement.appendChild(textDiv); // ←まずdivを追加
         spaceElement.appendChild(canvas);
 
         Promise.all([
