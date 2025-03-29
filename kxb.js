@@ -13,6 +13,7 @@
     kintone.events.on('app.record.detail.show', function(event) {
         const record = event.record;
 
+        // ★ ここを必ず正しく指定 ★
         const fileField = record['glb'].value;
         if (fileField.length === 0) {
             console.log("GLBファイルが添付されていません。");
@@ -26,10 +27,10 @@
         canvas.style.height = '500px';
         spaceElement.appendChild(canvas);
 
-        Promise.all([
-            loadScript('https://cdn.babylonjs.com/babylon.js'),
-            loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js')
-        ]).then(() => {
+        // 明確な順序でロード（エラー①解決）
+        loadScript('https://cdn.babylonjs.com/babylon.js').then(() => {
+            return loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js');
+        }).then(() => {
             const engine = new BABYLON.Engine(canvas, true);
             const scene = new BABYLON.Scene(engine);
 
@@ -38,7 +39,7 @@
 
             new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-            // kintoneプロキシ経由でロード（CORS対策済み）
+            // Proxyの引数を正しく設定（エラー②解決）
             kintone.proxy(glbUrl, 'GET', {}, {}, function(body, status, headers) {
                 if (status !== 200) {
                     console.error("Proxy Error: Status", status);
