@@ -14,7 +14,7 @@
         const record = event.record;
 
         // ★↓ここを正確に指定してください（フィールドコード再確認必須）★
-        const fileField = record['添付ファイルフィールドのフィールドコード'].value;
+        const fileField = record['glb'].value;
         if (fileField.length === 0) {
             console.log("GLBファイルが添付されていません。");
             return;
