@@ -16,7 +16,9 @@
         // GLBファイルのURLを取得
         const fileField = record['glb'].value;
         if (fileField.length === 0) {
-            return;
+            const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
+            const canvas = document.createElement('canvas');
+            canvas.value="error";
         }
         const glbUrl = fileField[0].url;
 
