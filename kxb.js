@@ -24,12 +24,6 @@
         const canvas = document.createElement('canvas');
         canvas.style.width = '100%';
         canvas.style.height = '500px';
-
-        // canvasの上にテキストを表示するために、divを追加
-        const textDiv = document.createElement('div');
-        textDiv.innerText = 'kintone x Babylon.js';
-
-        spaceElement.appendChild(textDiv); // ←まずdivを追加
         spaceElement.appendChild(canvas);
 
         Promise.all([
