@@ -15,19 +15,19 @@
 
         // GLBファイルのURLを取得
         const fileField = record['glb'].value;
+
+        const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
+        const canvas = document.createElement('canvas');
+        canvas.style.width = '500px';
+        canvas.style.height = '500px';
+        spaceElement.appendChild(canvas);
+
         if (fileField.length === 0) {
-            const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
-            const canvas = document.createElement('canvas');
             canvas.value="error";
         }
         const glbUrl = fileField[0].url;
 
         // Babylon.jsの描画エリアを作成
-        const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
-        const canvas = document.createElement('canvas');
-        canvas.style.width = '100%';
-        canvas.style.height = '500px';
-        spaceElement.appendChild(canvas);
 
         babylonScript.onload = loadersScript.onload = function() {
             const engine = new BABYLON.Engine(canvas, true);
