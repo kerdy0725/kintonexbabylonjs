@@ -1,57 +1,58 @@
 (function() {
     'use strict';
 
-    // CDNからBabylon.jsを読み込む
-    const babylonScript = document.createElement('script');
-    babylonScript.src = 'https://cdn.babylonjs.com/babylon.js';
-    document.head.appendChild(babylonScript);
-
-    const loadersScript = document.createElement('script');
-    loadersScript.src = 'https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js';
-    document.head.appendChild(loadersScript);
+    function loadScript(src) {
+        return new Promise(resolve => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+    }
 
     kintone.events.on('app.record.detail.show', function(event) {
         const record = event.record;
 
-        // GLBファイルのURLを取得
         const fileField = record['glb'].value;
-
-        const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
-        const canvas = document.createElement('canvas');
-        canvas.style.width = '500px';
-        canvas.style.height = '500px';
-        spaceElement.appendChild(canvas);
-
         if (fileField.length === 0) {
-            canvas.value="error";
+            console.log("GLBファイルが添付されていません。");
+            return;
         }
         const glbUrl = fileField[0].url;
 
-        // Babylon.jsの描画エリアを作成
+        const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
+        const canvas = document.createElement('canvas');
+        canvas.style.width = '100%';
+        canvas.style.height = '500px';
+        spaceElement.appendChild(canvas);
 
-        babylonScript.onload = loadersScript.onload = function() {
+        Promise.all([
+            loadScript('https://cdn.babylonjs.com/babylon.js'),
+            loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js')
+        ]).then(() => {
             const engine = new BABYLON.Engine(canvas, true);
             const scene = new BABYLON.Scene(engine);
-            
-            // カメラを設定
+
             const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 2, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
 
-            // 照明の設定
             new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-            // GLBモデルを読み込み
-            BABYLON.SceneLoader.Append('', glbUrl, scene, function() {
-                scene.createDefaultCameraOrLight(true, true, true);
-                engine.runRenderLoop(() => {
-                    scene.render();
+            fetch(glbUrl, {credentials: 'include'})
+            .then(response => response.blob())
+            .then(blob => {
+                const glbBlobUrl = URL.createObjectURL(blob);
+                BABYLON.SceneLoader.Append('', glbBlobUrl, scene, function() {
+                    scene.createDefaultCameraOrLight(true, true, true);
+                    engine.runRenderLoop(() => scene.render());
+                }, null, function(scene, message) {
+                    console.error("ロードエラー:", message);
                 });
             });
-            
-            // リサイズ対応
+
             window.addEventListener('resize', () => {
                 engine.resize();
             });
-        };
+        });
     });
 })();
