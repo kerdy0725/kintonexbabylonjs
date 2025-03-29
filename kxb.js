@@ -24,6 +24,7 @@
         const canvas = document.createElement('canvas');
         canvas.style.width = '100%';
         canvas.style.height = '500px';
+        canvas.innerText = 'test';
         spaceElement.appendChild(canvas);
 
         Promise.all([
