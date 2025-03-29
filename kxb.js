@@ -1,4 +1,4 @@
-// 2357
+// 0002
 (function () {
     'use strict';
   
@@ -14,14 +14,13 @@
     kintone.events.on('app.record.detail.show', function (event) {
       const record = event.record;
   
-      const fileField = record['glb']; // ← フィールドコード正しく！
+      const fileField = record['glb']; // ← フィールドコード要確認
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.log("GLBファイルが添付されていません。");
         return;
       }
   
       const fileKey = fileField.value[0].fileKey;
-  
       const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
       const canvas = document.createElement('canvas');
       canvas.style.width = '100%';
@@ -39,29 +38,30 @@
         camera.attachControl(canvas, true);
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-        // ✅ fileKey からファイルを取得！
-        kintone.api('/k/v1/file.json', 'GET', { fileKey: fileKey })
-          .then(response => {
-            const base64 = response.file;
-            const binary = atob(base64);
-            const len = binary.length;
-            const buffer = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-              buffer[i] = binary.charCodeAt(i);
-            }
-            const blob = new Blob([buffer], { type: 'model/gltf-binary' });
-            const blobUrl = URL.createObjectURL(blob);
+        // ✅ XMLHttpRequestでBlobとしてファイルを取得
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/k/v1/file.json?fileKey=${fileKey}`, true);
+        xhr.responseType = 'blob';
+        xhr.onload = function () {
+          if (xhr.status !== 200) {
+            console.error("XHR Error: Status", xhr.status);
+            return;
+          }
   
-            BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
-              scene.createDefaultCameraOrLight(true, true, true);
-              engine.runRenderLoop(() => scene.render());
-            }, null, function (scene, message) {
-              console.error("Babylon.js Load Error:", message);
-            });
-          })
-          .catch(error => {
-            console.error("kintone.api file fetch error:", error);
+          const blob = xhr.response;
+          const blobUrl = URL.createObjectURL(blob);
+  
+          BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
+            scene.createDefaultCameraOrLight(true, true, true);
+            engine.runRenderLoop(() => scene.render());
+          }, null, function (scene, message) {
+            console.error("Babylon.js Load Error:", message);
           });
+        };
+        xhr.onerror = function () {
+          console.error("XHR Network Error");
+        };
+        xhr.send();
   
         window.addEventListener('resize', () => {
           engine.resize();
