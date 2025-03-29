@@ -1,4 +1,4 @@
-//2343
+//2349
 (function () {
     'use strict';
   
@@ -14,7 +14,7 @@
     kintone.events.on('app.record.detail.show', function (event) {
       const record = event.record;
   
-      // ✅ フィールドコードが正しいか確認（例：'glb'）
+      // ✅ 添付ファイルフィールドのフィールドコードを確認（例：'glb'）
       const fileField = record['glb'];
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.log("GLBファイルが添付されていません。");
@@ -42,7 +42,12 @@
         camera.attachControl(canvas, true);
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-        kintone.proxy(glbUrl, 'GET', {}, {}, 
+        // ✅ 認証付きでファイルを取得するためのヘッダー
+        const headers = {
+          'X-Requested-With': 'XMLHttpRequest'
+        };
+  
+        kintone.proxy(glbUrl, 'GET', headers, {}, 
           function (body, status, headers) {
             if (status !== 200) {
               console.error("Proxy Error: Status", status);
