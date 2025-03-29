@@ -1,0 +1,2 @@
+# kintonexbabylonjs
+kintoneのUPLOADしたglbファイルを、kintoneのビュー内で3D表示するBabylon.jsのコード
