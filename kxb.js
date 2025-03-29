@@ -21,7 +21,7 @@
         const glbUrl = fileField[0].url;
 
         // Babylon.jsの描画エリアを作成
-        const spaceElement = kintone.app.record.getSpaceElement('3d_view_space');
+        const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
         const canvas = document.createElement('canvas');
         canvas.style.width = '100%';
         canvas.style.height = '500px';
