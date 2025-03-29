@@ -13,13 +13,16 @@
     kintone.events.on('app.record.detail.show', function(event) {
         const record = event.record;
 
-        // ★添付ファイルのフィールドコードを正確に指定★
-        const fileField = record['glb'].value;
+        // ★↓ここを正確に指定してください（フィールドコード再確認必須）★
+        const fileField = record['添付ファイルフィールドのフィールドコード'].value;
         if (fileField.length === 0) {
             console.log("GLBファイルが添付されていません。");
             return;
         }
         const glbUrl = fileField[0].url;
+
+        // ★ここで必ずURLを確認★
+        console.log("glbUrlの中身:", glbUrl);
 
         const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
         const canvas = document.createElement('canvas');
@@ -27,11 +30,9 @@
         canvas.style.height = '500px';
         spaceElement.appendChild(canvas);
 
-        // ★明確に読み込み完了を待つ★
         loadScript('https://cdn.babylonjs.com/babylon.js').then(() => {
             return loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js');
         }).then(() => {
-            // ★必ずここからBabylonを使用★
             const engine = new BABYLON.Engine(canvas, true);
             const scene = new BABYLON.Scene(engine);
 
@@ -40,7 +41,6 @@
 
             new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-            // kintone.proxyを正確に指定（エラー対策済み）
             kintone.proxy(glbUrl, 'GET', {}, {}, 
                 function(body, status, headers) {
                     if (status !== 200) {
