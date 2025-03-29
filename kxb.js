@@ -14,7 +14,7 @@
         const record = event.record;
 
         // GLBファイルのURLを取得
-        const fileField = record['添付ファイルフィールドのフィールドコード'].value;
+        const fileField = record['glb'].value;
         if (fileField.length === 0) {
             return;
         }
