@@ -22,6 +22,7 @@
         }
 
         const glbUrl = fileField.value[0].url;
+        console.log("value[0]の中身:", fileField.value[0]);
         console.log("glbUrlの中身:", glbUrl);
 
         const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
