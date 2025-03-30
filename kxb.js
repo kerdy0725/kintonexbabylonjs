@@ -1,4 +1,5 @@
-//1014
+//1017
+
 (function () {
     'use strict';
   
@@ -14,7 +15,7 @@
     kintone.events.on('app.record.detail.show', function (event) {
       const record = event.record;
   
-      const fileField = record['glb']; // ← フィールドコード再確認！
+      const fileField = record['glb']; // ✅ フィールドコードを実際のものに変更！
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.log("GLBファイルが添付されていません。");
         return;
@@ -40,6 +41,7 @@
         camera.attachControl(canvas, true);
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
+        // ✅ GLBファイルを取得（バイナリ）
         const xhr = new XMLHttpRequest();
         xhr.open('GET', `/k/v1/file.json?fileKey=${fileKey}`, true);
         xhr.responseType = 'arraybuffer';
@@ -49,6 +51,7 @@
             return;
           }
   
+          // デバッグログ（ここは削除してもOK）
           const contentType = xhr.getResponseHeader('Content-Type');
           console.log("Content-Type:", contentType);
   
@@ -59,16 +62,19 @@
           const blob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
           const blobUrl = URL.createObjectURL(blob);
   
+          // ✅ ファイルタイプを ".glb" として明示指定！！
           BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
             scene.createDefaultCameraOrLight(true, true, true);
             engine.runRenderLoop(() => scene.render());
           }, null, function (scene, message) {
             console.error("Babylon.js Load Error:", message);
-          });
+          }, ".glb");
         };
+  
         xhr.onerror = function () {
           console.error("XHR Network Error");
         };
+  
         xhr.send();
   
         window.addEventListener('resize', () => {
