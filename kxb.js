@@ -1,4 +1,4 @@
-//1107
+//1110
 (function () {
     'use strict';
   
@@ -32,13 +32,15 @@
   
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-        BABYLON.SceneLoader.Append('', externalGlbUrl, scene, function () {
-          console.log("GLB読み込み成功！");
-          scene.createDefaultCameraOrLight(true, true, true);
-          engine.runRenderLoop(() => scene.render());
-        }, null, function (scene, message) {
-          console.error("Babylon.js Load Error:", message);
-        }, ".glb");
+        BABYLON.SceneLoader.Append(
+            '', 
+            "https://kerdy0725.github.io/kintonexbabylonjs/rx-78f00.glb", 
+            scene, 
+            () => { engine.runRenderLoop(() => scene.render()); },
+            null, 
+            (scene, message) => { console.error("Babylon.js Load Error:", message); },
+            ".glb" // ←これが重要！
+          );
   
         window.addEventListener('resize', () => engine.resize());
       });
