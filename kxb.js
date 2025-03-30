@@ -1,4 +1,4 @@
-//2053
+//2056
 (function () {
     'use strict';
   
@@ -86,6 +86,7 @@
       try {
         console.log("step8");
         const glbUrl = await fetchBlobUrlFromFileKey(fileKey);
+        console.log(glbUrl);
   
         // GLBファイルの読み込み
         BABYLON.SceneLoader.ImportMesh(
