@@ -1,5 +1,4 @@
-//1017
-
+//1023
 (function () {
     'use strict';
   
@@ -15,7 +14,7 @@
     kintone.events.on('app.record.detail.show', function (event) {
       const record = event.record;
   
-      const fileField = record['glb']; // ✅ フィールドコードを実際のものに変更！
+      const fileField = record['glb']; // ← ★フィールドコードを自分のに変更！
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.log("GLBファイルが添付されていません。");
         return;
@@ -37,11 +36,10 @@
         const engine = new BABYLON.Engine(canvas, true);
         const scene = new BABYLON.Scene(engine);
   
-        const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 2, BABYLON.Vector3.Zero(), scene);
+        const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 10, BABYLON.Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-        // ✅ GLBファイルを取得（バイナリ）
         const xhr = new XMLHttpRequest();
         xhr.open('GET', `/k/v1/file.json?fileKey=${fileKey}`, true);
         xhr.responseType = 'arraybuffer';
@@ -51,7 +49,6 @@
             return;
           }
   
-          // デバッグログ（ここは削除してもOK）
           const contentType = xhr.getResponseHeader('Content-Type');
           console.log("Content-Type:", contentType);
   
@@ -62,13 +59,13 @@
           const blob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
           const blobUrl = URL.createObjectURL(blob);
   
-          // ✅ ファイルタイプを ".glb" として明示指定！！
+          // ✅ ".glb" 拡張子を明示してプラグインを強制指定！
           BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
             scene.createDefaultCameraOrLight(true, true, true);
             engine.runRenderLoop(() => scene.render());
           }, null, function (scene, message) {
             console.error("Babylon.js Load Error:", message);
-          }, ".glb");
+          }, ".glb"); // ← ← ← ← ← ← ここが超重要！
         };
   
         xhr.onerror = function () {
