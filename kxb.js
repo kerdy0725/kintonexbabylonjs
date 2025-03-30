@@ -1,4 +1,4 @@
-//2357
+//0852
 (function () {
     'use strict';
   
@@ -80,7 +80,7 @@
         const blobUrl = URL.createObjectURL(fileBlob);
   
         // STEP8: Babylon.jsでGLB読み込み
-        BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
+        BABYLON.SceneLoader.Append('', "https://d1tiiuu9c3eg.cybozu.com/k/api/record/download.do/-/rx-78f00.glb?app=9&field=2226&detectType=true&record=1&row=6625&id=27&hash=2aff262cc76aa5711be1118be1fdd36b477e23ba&revision=2&.glb", scene, function () {
           engine.runRenderLoop(() => scene.render());
         }, null, function (scene, message) {
           console.error("❌ Babylon.js Load Error:", message);
