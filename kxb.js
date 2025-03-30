@@ -1,4 +1,4 @@
-//2041
+//2044
 (function () {
     'use strict';
   
@@ -73,7 +73,7 @@
   
       console.log("step6");
       // ファイルフィールドから fileKey を取得
-      const fileField = record['3dfile'];
+      const fileField = record['glb'];
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.error("GLBファイルが登録されていません");
         return;
