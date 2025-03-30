@@ -1,4 +1,4 @@
-//2127
+//2131
 (function () {
     'use strict';
   
@@ -7,13 +7,19 @@
   
     // 外部スクリプトを読み込む関数
     function loadScript(src) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.onload = () => {
+            console.log(`✅ Script loaded: ${src}`);
+            resolve();
+          };
+          script.onerror = () => {
+            console.error(`❌ Failed to load script: ${src}`);
+            reject(new Error(`Failed to load script: ${src}`));
+          };
+          document.head.appendChild(script);
+        });
     }
   
     // kintoneの詳細画面イベント
@@ -35,7 +41,7 @@
       await loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js');
       log('📦 STEP2: babylonjs.loaders.miniスクリプト読み込み完了');
 
-      await loadScript('https://unpkg.com/@kintone/kintone-js-sdk@latest/dist/umd/kintone-js-sdk.min.js');
+      await loadScript('https://cdn.jsdelivr.net/npm/@kintone/kintone-js-sdk@1.12.1/dist/umd/kintone-js-sdk.min.js');
       log('📦 STEP2: kintone-js-sdk スクリプト読み込み完了');
   
       // STEP3: canvas追加
