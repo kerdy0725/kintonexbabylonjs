@@ -1,4 +1,4 @@
-//1115
+//1119
 (function () {
     'use strict';
   
@@ -19,7 +19,10 @@
       space.innerHTML = '';
       space.appendChild(canvas);
   
-      loadScript('https://cdn.babylonjs.com/babylon.js').then(() => {
+      Promise.all([
+        loadScript('https://cdn.babylonjs.com/babylon.js'),
+        loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js') // ←これが重要！
+      ]).then(() => {
         const engine = new BABYLON.Engine(canvas, true);
         const scene = new BABYLON.Scene(engine);
   
