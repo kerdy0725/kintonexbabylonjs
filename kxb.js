@@ -1,4 +1,4 @@
-//1056
+//1102
 (function () {
     'use strict';
   
@@ -31,14 +31,24 @@
         camera.attachControl(canvas, true);
   
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-  
-        BABYLON.SceneLoader.Append(externalGlbUrl, "rx-78f00.glb", scene, function () {
-          console.log("GLB読み込み成功！");
-          scene.createDefaultCameraOrLight(true, true, true);
-          engine.runRenderLoop(() => scene.render());
-        }, null, function (scene, message) {
-          console.error("Babylon.js Load Error:", message);
-        }, ".glb");
+
+        
+        BABYLON.SceneLoader.Append(
+            "https://kerdy0725.github.io/kintonexbabylonjs/",
+            "rx-78f00.glb",
+            scene,
+            function (scene) {
+              scene.createDefaultCameraOrLight(true, true, true);
+              engine.runRenderLoop(function () {
+                scene.render();
+              });
+            },
+            null,
+            function (scene, message) {
+              console.error("読み込みエラー:", message);
+            },
+            ".glb"
+        );
   
         window.addEventListener('resize', () => engine.resize());
       });
