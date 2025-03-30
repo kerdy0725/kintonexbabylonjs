@@ -1,4 +1,4 @@
-//2354
+//2357
 (function () {
     'use strict';
   
@@ -73,7 +73,7 @@
   
       try {
         // STEP6: ファイルをBlobで取得
-        const client = new kintoneJSSDK.default.KintoneRestAPIClient();
+        const client = new KintoneRestAPIClient();
         const fileBlob = await client.file.downloadFile({ fileKey });
   
         // STEP7: BlobをURLに変換
