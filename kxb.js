@@ -1,4 +1,4 @@
-//1119
+//1130
 (function () {
     'use strict';
   
@@ -21,8 +21,8 @@
   
       Promise.all([
         loadScript('https://cdn.babylonjs.com/babylon.js'),
-        loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js') // ←これが重要！
-      ]).then(() => {
+        loadScript("https://unpkg.com/@babylonjs/loaders@8.0.1/babylonjs.loaders.min.js")
+    ]).then(() => {
         const engine = new BABYLON.Engine(canvas, true);
         const scene = new BABYLON.Scene(engine);
   
