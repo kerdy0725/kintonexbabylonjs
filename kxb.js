@@ -1,4 +1,4 @@
-//2044
+//2053
 (function () {
     'use strict';
   
@@ -88,13 +88,22 @@
         const glbUrl = await fetchBlobUrlFromFileKey(fileKey);
   
         // GLBファイルの読み込み
-        BABYLON.SceneLoader.Append('', glbUrl, scene, function () {
-          engine.runRenderLoop(() => {
-            scene.render();
-          });
-        }, null, function (scene, message) {
-          console.error("Babylon.js Load Error:", message);
-        });
+        BABYLON.SceneLoader.ImportMesh(
+            null,                // 全Meshを読み込む
+            '',                  // ルートURL（空でOK）
+            glbUrl,              // 取得したBlob URL
+            scene,
+            function (meshes) {
+              console.log("GLB読み込み成功:", meshes);
+              engine.runRenderLoop(() => {
+                scene.render();
+              });
+            },
+            null,
+            function (scene, message) {
+              console.error("Babylon.js Load Error:", message);
+            }
+          );
   
         // ウィンドウリサイズ対応
         window.addEventListener('resize', () => {
