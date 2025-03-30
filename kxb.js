@@ -1,4 +1,4 @@
-//2018
+//2022
 (function () {
     'use strict';
   
@@ -57,7 +57,7 @@
       const fetchBlobUrlFromFileKey = (fileKey) => {
         return new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
-          xhr.open('POST', '/k/v1/file.json');
+          xhr.open('GET', `/k/v1/file.json?fileKey=${fileKey}`);
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.withCredentials = true; // ログインセッションを利用
           xhr.responseType = 'blob';
@@ -77,7 +77,7 @@
             reject(new Error("Network Error"));
           };
   
-          xhr.send(JSON.stringify({ fileKey }));
+          xhr.send();
         });
       };
   
