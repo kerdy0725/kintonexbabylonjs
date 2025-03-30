@@ -1,4 +1,4 @@
-// 0002
+// 1008
 (function () {
     'use strict';
   
@@ -14,7 +14,7 @@
     kintone.events.on('app.record.detail.show', function (event) {
       const record = event.record;
   
-      const fileField = record['glb']; // ← フィールドコード要確認
+      const fileField = record['glb']; // ← フィールドコード確認
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.log("GLBファイルが添付されていません。");
         return;
@@ -38,17 +38,18 @@
         camera.attachControl(canvas, true);
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-        // ✅ XMLHttpRequestでBlobとしてファイルを取得
+        // ✅ arraybufferで取得
         const xhr = new XMLHttpRequest();
         xhr.open('GET', `/k/v1/file.json?fileKey=${fileKey}`, true);
-        xhr.responseType = 'blob';
+        xhr.responseType = 'arraybuffer';
         xhr.onload = function () {
           if (xhr.status !== 200) {
             console.error("XHR Error: Status", xhr.status);
             return;
           }
   
-          const blob = xhr.response;
+          const arrayBuffer = xhr.response;
+          const blob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
           const blobUrl = URL.createObjectURL(blob);
   
           BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
