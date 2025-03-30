@@ -1,4 +1,4 @@
-//1031
+//1056
 (function () {
     'use strict';
   
@@ -11,23 +11,14 @@
       });
     }
   
-    kintone.events.on('app.record.detail.show', function (event) {
-      const record = event.record;
-      const fileField = record['glb']; // ← フィールドコードを正しく
-  
-      if (!fileField || !fileField.value || fileField.value.length === 0) {
-        console.log("GLBファイルが添付されていません。");
-        return;
-      }
-  
-      const fileKey = fileField.value[0].fileKey;
-      console.log("fileKey:", fileKey);
-  
+    kintone.events.on('app.record.detail.show', function () {
       const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
       const canvas = document.createElement('canvas');
       canvas.style.width = '100%';
       canvas.style.height = '500px';
       spaceElement.appendChild(canvas);
+  
+      const externalGlbUrl = 'https://kerdy0725.github.io/kintonexbabylonjs/'; // ← 公開したGLBファイルのURL
   
       Promise.all([
         loadScript('https://cdn.babylonjs.com/babylon.js'),
@@ -35,47 +26,21 @@
       ]).then(() => {
         const engine = new BABYLON.Engine(canvas, true);
         const scene = new BABYLON.Scene(engine);
+  
         const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 10, BABYLON.Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
+  
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', `/k/v1/file.json?fileKey=${encodeURIComponent(fileKey)}`, true);
-        xhr.responseType = 'arraybuffer';
+        BABYLON.SceneLoader.Append(externalGlbUrl, "rx-78f00.glb", scene, function () {
+          console.log("GLB読み込み成功！");
+          scene.createDefaultCameraOrLight(true, true, true);
+          engine.runRenderLoop(() => scene.render());
+        }, null, function (scene, message) {
+          console.error("Babylon.js Load Error:", message);
+        }, ".glb");
   
-        xhr.onload = function () {
-          if (xhr.status !== 200) {
-            console.error("XHR Error: Status", xhr.status);
-            return;
-          }
-  
-          const contentType = xhr.getResponseHeader('Content-Type');
-          console.log("Content-Type:", contentType);
-          const previewText = new TextDecoder().decode(xhr.response.slice(0, 300));
-          console.log("レスポンス先頭300文字:", previewText);
-  
-          const blob = new Blob([xhr.response], { type: 'model/gltf-binary' });
-          const blobUrl = URL.createObjectURL(blob);
-  
-          BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
-            console.log("読み込まれたメッシュ:", scene.meshes);
-            scene.createDefaultCameraOrLight(true, true, true);
-            scene.debugLayer.show();
-            engine.runRenderLoop(() => scene.render());
-          }, null, function (scene, message) {
-            console.error("Babylon.js Load Error:", message);
-          }, ".glb"); // ← 拡張子指定！
-        };
-  
-        xhr.onerror = function () {
-          console.error("XHR Network Error");
-        };
-  
-        xhr.send();
-  
-        window.addEventListener('resize', () => {
-          engine.resize();
-        });
+        window.addEventListener('resize', () => engine.resize());
       });
     });
   })();
