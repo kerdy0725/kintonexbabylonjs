@@ -1,4 +1,4 @@
-//2032
+//2033
 (function () {
     'use strict';
   
@@ -19,7 +19,10 @@
         xhr.open('GET', `/k/v1/file.json?fileKey=${fileKey}`);
         xhr.withCredentials = true;
         xhr.responseType = 'blob';
-  
+
+        console.log("STEP1");
+
+        
         xhr.onload = function () {
           if (xhr.status === 200) {
             const blob = xhr.response;
@@ -32,7 +35,8 @@
         };
   
         xhr.onerror = function () {
-          reject(new Error("Network Error"));
+            console.log("STEP2");
+            reject(new Error("Network Error"));
         };
   
         xhr.send();
@@ -40,6 +44,7 @@
     };
   
     // レコード詳細表示イベント
+    console.log("STEP3");
     kintone.events.on('app.record.detail.show', async function () {
       const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
       if (!spaceElement) {
@@ -53,6 +58,8 @@
       // Babylon.js & loaders 読み込み
       await loadScript('https://cdn.babylonjs.com/babylon.js');
       await loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js');
+
+      console.log("STEP4");
   
       // canvas 作成
       const canvas = document.createElement('canvas');
@@ -69,6 +76,9 @@
       camera.attachControl(canvas, true);
       new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
+      console.log("STEP5");
+
+
       // ファイルフィールドから fileKey を取得
       const record = kintone.app.record.get();
       const fileField = record.record['3dfile']; // ←ここはフィールドコードに合わせて変更してください
@@ -77,10 +87,14 @@
         console.error("GLBファイルが登録されていません");
         return;
       }
-  
+
+      console.log("STEP6");
+
       const fileKey = fileField.value[0].fileKey;
       console.log("fileKey:", fileKey);
   
+      console.log("STEP7");
+
       try {
         // Blob URL取得
         const blobUrl = await fetchBlobUrlFromFileKey(fileKey);
@@ -96,6 +110,7 @@
       } catch (error) {
         console.error("GLBの読み込みに失敗しました:", error);
       }
+      console.log("STEP8");
   
       // リサイズ対応
       window.addEventListener('resize', () => {
