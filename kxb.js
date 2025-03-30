@@ -1,4 +1,4 @@
-//2347
+//2351
 (function () {
     'use strict';
   
@@ -73,7 +73,7 @@
   
       try {
         // STEP6: ファイルをBlobで取得
-        const client = new KintoneRestAPIClient(); // UMD版のグローバル変数
+        const client = new kintoneJSSDK.KintoneRestAPIClient();
         const fileBlob = await client.file.downloadFile({ fileKey });
   
         // STEP7: BlobをURLに変換
