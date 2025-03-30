@@ -1,4 +1,4 @@
-//0854
+//0858
 (function () {
     'use strict';
   
@@ -74,7 +74,9 @@
       try {
         // STEP6: ファイルをBlobで取得
         const client = new KintoneRestAPIClient();
+        log('STEP1');
         const fileBlob = await client.file.downloadFile({ fileKey });
+        log('STEP2');
   
         // STEP7: BlobをURLに変換
         const blobUrl = URL.createObjectURL(fileBlob);
