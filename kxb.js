@@ -1,3 +1,4 @@
+//2127
 (function () {
     'use strict';
   
@@ -29,9 +30,13 @@
   
       // STEP2: 必要なライブラリをロード
       await loadScript('https://cdn.babylonjs.com/babylon.js');
+      log('📦 STEP2: babylon.js スクリプト読み込み完了');
+    
       await loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js');
+      log('📦 STEP2: babylonjs.loaders.miniスクリプト読み込み完了');
+
       await loadScript('https://unpkg.com/@kintone/kintone-js-sdk@latest/dist/umd/kintone-js-sdk.min.js');
-      log('📦 STEP2: スクリプト読み込み完了');
+      log('📦 STEP2: kintone-js-sdk スクリプト読み込み完了');
   
       // STEP3: canvas追加
       const canvas = document.createElement('canvas');
