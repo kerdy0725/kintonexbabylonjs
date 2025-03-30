@@ -1,4 +1,4 @@
-//1102
+//1107
 (function () {
     'use strict';
   
@@ -18,7 +18,7 @@
       canvas.style.height = '500px';
       spaceElement.appendChild(canvas);
   
-      const externalGlbUrl = 'https://kerdy0725.github.io/kintonexbabylonjs/'; // ← 公開したGLBファイルのURL
+      const externalGlbUrl = 'https://kerdy0725.github.io/kintonexbabylonjs/rx-78f00.glb'; // ← 公開したGLBファイルのURL
   
       Promise.all([
         loadScript('https://cdn.babylonjs.com/babylon.js'),
@@ -31,24 +31,14 @@
         camera.attachControl(canvas, true);
   
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
-        
-        BABYLON.SceneLoader.Append(
-            "https://kerdy0725.github.io/kintonexbabylonjs/",
-            "rx-78f00.glb",
-            scene,
-            function (scene) {
-              scene.createDefaultCameraOrLight(true, true, true);
-              engine.runRenderLoop(function () {
-                scene.render();
-              });
-            },
-            null,
-            function (scene, message) {
-              console.error("読み込みエラー:", message);
-            },
-            ".glb"
-        );
+  
+        BABYLON.SceneLoader.Append('', externalGlbUrl, scene, function () {
+          console.log("GLB読み込み成功！");
+          scene.createDefaultCameraOrLight(true, true, true);
+          engine.runRenderLoop(() => scene.render());
+        }, null, function (scene, message) {
+          console.error("Babylon.js Load Error:", message);
+        }, ".glb");
   
         window.addEventListener('resize', () => engine.resize());
       });
