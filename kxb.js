@@ -1,4 +1,3 @@
-//1023
 (function () {
     'use strict';
   
@@ -14,7 +13,7 @@
     kintone.events.on('app.record.detail.show', function (event) {
       const record = event.record;
   
-      const fileField = record['glb']; // ← ★フィールドコードを自分のに変更！
+      const fileField = record['glb']; // ← ★ここはGLBファイルのフィールドコードに合わせて変更！
       if (!fileField || !fileField.value || fileField.value.length === 0) {
         console.log("GLBファイルが添付されていません。");
         return;
@@ -36,8 +35,16 @@
         const engine = new BABYLON.Engine(canvas, true);
         const scene = new BABYLON.Scene(engine);
   
-        const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 10, BABYLON.Vector3.Zero(), scene);
+        const camera = new BABYLON.ArcRotateCamera(
+          "camera",
+          Math.PI / 2,
+          Math.PI / 3,
+          10,
+          BABYLON.Vector3.Zero(),
+          scene
+        );
         camera.attachControl(canvas, true);
+  
         new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
         const xhr = new XMLHttpRequest();
@@ -59,13 +66,21 @@
           const blob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
           const blobUrl = URL.createObjectURL(blob);
   
-          // ✅ ".glb" 拡張子を明示してプラグインを強制指定！
           BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
-            scene.createDefaultCameraOrLight(true, true, true);
+            // ✅ 表示確認用：メッシュ出力とデバッグレイヤー
+            console.log("読み込まれたメッシュ一覧:", scene.meshes);
+            scene.debugLayer.show();
+  
+            // カメラ調整（モデルが見えないとき用）
+            if (scene.activeCamera) {
+              scene.activeCamera.alpha += Math.PI;
+              scene.activeCamera.radius = 5;
+            }
+  
             engine.runRenderLoop(() => scene.render());
           }, null, function (scene, message) {
             console.error("Babylon.js Load Error:", message);
-          }, ".glb"); // ← ← ← ← ← ← ここが超重要！
+          }, ".glb"); // ← ← ← ← ← ← ★ここ超重要！！！
         };
   
         xhr.onerror = function () {
