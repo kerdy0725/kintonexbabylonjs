@@ -1,4 +1,4 @@
-//2109
+//2111
 (function () {
     'use strict';
   
@@ -77,10 +77,10 @@
         log('STEP1');
         const fileBlob = await client.file.downloadFile({ fileKey });
         log('STEP2');
+        log('🗝️ URL:', blobUrl);
   
         // STEP7: BlobをURLに変換
         const blobUrl = URL.createObjectURL(fileBlob);
-        log('🗝️ URL:', blobUrl);
   
         // STEP8: Babylon.jsでGLB読み込み
         BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
