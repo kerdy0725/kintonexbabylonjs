@@ -1,99 +1,103 @@
-//2113
+//2125
 (function () {
     'use strict';
+    console.log('kxb.js: 🚀 Babylon Viewer Start');
   
-    // ログ出力のprefix
-    const log = (msg, ...args) => console.log(`kxb.js: ${msg}`, ...args);
-  
-    // 外部スクリプトを読み込む関数
+    // スクリプトを読み込む関数
     function loadScript(src) {
-        return new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = src;
-          script.onload = () => {
-            console.log(`✅ Script loaded: ${src}`);
-            resolve();
-          };
-          script.onerror = () => {
-            console.error(`❌ Failed to load script: ${src}`);
-            reject(new Error(`Failed to load script: ${src}`));
-          };
-          document.head.appendChild(script);
-        });
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => {
+          console.log(`✅ Script loaded: ${src}`);
+          resolve();
+        };
+        script.onerror = () => {
+          console.error(`❌ Failed to load script: ${src}`);
+          reject(new Error(`Failed to load script: ${src}`));
+        };
+        document.head.appendChild(script);
+      });
     }
   
-    // kintoneの詳細画面イベント
-    kintone.events.on('app.record.detail.show', async (event) => {
-      log('🚀 Babylon Viewer Start');
+    // kintoneのレコード詳細画面表示イベント
+    kintone.events.on('app.record.detail.show', async function () {
+      console.log('kxb.js: 📦 STEP1: スペースフィールド取得');
   
-      // STEP1: スペースフィールド取得
       const spaceElement = kintone.app.record.getSpaceElement('view3d_space');
-      if (!spaceElement) return console.error("❌ スペースフィールドが見つかりません");
-      log('📦 STEP1: スペースフィールド取得');
+      if (!spaceElement) {
+        console.error("❌ スペースフィールド 'view3d_space' が見つかりません");
+        return;
+      }
   
-      // すでにcanvasがあるなら何もしない
+      // 二重追加防止
       if (spaceElement.querySelector('canvas')) return;
   
-      // STEP2: 必要なライブラリをロード
+      // Babylon.js 関連スクリプトの読み込み
       await loadScript('https://cdn.babylonjs.com/babylon.js');
-      log('📦 STEP2: babylon.js スクリプト読み込み完了');
-    
+      console.log('kxb.js: 📦 STEP2: babylon.js スクリプト読み込み完了');
       await loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js');
-      log('📦 STEP2: babylonjs.loaders.miniスクリプト読み込み完了');
-
-      await loadScript('https://js.cybozu.com/kintone-rest-api-client/5.6.0/KintoneRestAPIClient.min.js');
-      log('📦 STEP2: kintone-js-sdk スクリプト読み込み完了');
+      console.log('kxb.js: 📦 STEP2: babylonjs.loaders.min.js スクリプト読み込み完了');
   
-      // STEP3: canvas追加
+      // canvas 作成
       const canvas = document.createElement('canvas');
       canvas.style.width = '100%';
       canvas.style.height = '500px';
       spaceElement.appendChild(canvas);
-      log('🖼️ STEP3: Canvas 追加');
   
-      // STEP4: Babylon.js初期化
+      console.log('kxb.js: 🖼️ STEP3: Canvas 追加');
+  
+      // Babylon.js 初期化
       const engine = new BABYLON.Engine(canvas, true);
       const scene = new BABYLON.Scene(engine);
-      const camera = new BABYLON.ArcRotateCamera('camera', Math.PI / 2, Math.PI / 3, 2, BABYLON.Vector3.Zero(), scene);
+      const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 2, BABYLON.Vector3.Zero(), scene);
       camera.attachControl(canvas, true);
-      new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), scene);
-      log('🎥 STEP4: Babylonシーン作成');
+      new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
   
-      // STEP5: レコード取得とfileKey取得
-      const record = event.record;
-      const fileField = record.glb // ← あなたのファイルフィールドのフィールドコード
-      log('📦 STEP5: レコード取得');
+      console.log('kxb.js: 🎥 STEP4: Babylonシーン作成');
   
-      if (!fileField || !fileField.value || fileField.value.length === 0) {
-        return console.warn('❌ GLBファイルが登録されていません');
+      // レコードからfileKey取得
+      const record = kintone.app.record.get();
+      const fileField = record.record['3dモデル'];
+      if (!fileField || fileField.value.length === 0) {
+        console.warn('⚠️ GLBファイルが登録されていません');
+        return;
       }
   
       const fileKey = fileField.value[0].fileKey;
-      log('🗝️ fileKey:', fileKey);
+      console.log('kxb.js: 🗝️ fileKey:', fileKey);
   
       try {
-        // STEP6: ファイルをBlobで取得
-        const client = new KintoneRestAPIClient();
-        log('STEP1');
-        const fileBlob = await client.file.downloadFile({ fileKey });
-        log('STEP2');
-  
-        // STEP7: BlobをURLに変換
-        const blobUrl = URL.createObjectURL(fileBlob);
-        log('🗝️ URL:', blobUrl);
-  
-        // STEP8: Babylon.jsでGLB読み込み
-        BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
-          engine.runRenderLoop(() => scene.render());
-        }, null, function (scene, message) {
-          console.error("❌ Babylon.js Load Error:", message);
+        // GLBファイル取得（blob形式）
+        const response = await fetch(`/k/v1/file.json?fileKey=${fileKey}`, {
+          method: 'GET',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
         });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const fileBlob = await response.blob();
+        const blobUrl = URL.createObjectURL(fileBlob);
+  
+        // Babylon.jsでGLB読み込み
+        await BABYLON.SceneLoader.AppendAsync('', blobUrl, scene);
+  
+        engine.runRenderLoop(() => {
+          scene.render();
+        });
+  
       } catch (error) {
-        console.error('❌ GLBの読み込みに失敗しました:', error);
+        console.error("❌ GLBの読み込みに失敗しました:", error);
       }
   
       // ウィンドウリサイズ対応
-      window.addEventListener('resize', () => engine.resize());
+      window.addEventListener('resize', () => {
+        engine.resize();
+      });
     });
   })();
   
