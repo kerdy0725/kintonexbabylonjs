@@ -1,4 +1,4 @@
-//2118
+//2134
 (function () {
     'use strict';
   
@@ -75,7 +75,19 @@
         // STEP6: ファイルをBlobで取得
         const client = new KintoneRestAPIClient();
         log('STEP1');
-        const fileBlob = await client.file.downloadFile({ fileKey });
+  
+        const response = await fetch(`/k/v1/file.json?fileKey=${fileKey}`, {
+            method: 'GET',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        const fileBlob = await response.blob();
+//        const fileBlob = await client.file.downloadFile({ fileKey });
         log('fileBlob:', fileBlob);
 
         // STEP7: BlobをURLに変換
