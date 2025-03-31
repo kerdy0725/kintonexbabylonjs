@@ -1,4 +1,4 @@
-//0858
+//2109
 (function () {
     'use strict';
   
@@ -41,7 +41,7 @@
       await loadScript('https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js');
       log('📦 STEP2: babylonjs.loaders.miniスクリプト読み込み完了');
 
-      await loadScript('https://cdn.jsdelivr.net/npm/@kintone/kintone-js-sdk@0.7.8/dist/kintone-js-sdk.min.js');
+      await loadScript('https://js.cybozu.com/kintone-rest-api-client/5.6.0/KintoneRestAPIClient.min.js');
       log('📦 STEP2: kintone-js-sdk スクリプト読み込み完了');
   
       // STEP3: canvas追加
