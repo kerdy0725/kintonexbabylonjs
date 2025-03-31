@@ -1,4 +1,4 @@
-//2134
+//2139
 (function () {
     'use strict';
   
@@ -95,11 +95,22 @@
         log('🗝️ URL:', blobUrl);
   
         // STEP8: Babylon.jsでGLB読み込み
-        BABYLON.SceneLoader.Append('', blobUrl, scene, function () {
-          engine.runRenderLoop(() => scene.render());
-        }, null, function (scene, message) {
-          console.error("❌ Babylon.js Load Error:", message);
-        });
+        BABYLON.SceneLoader.LoadAssetContainer(
+            'file:',
+            blobUrl,
+            scene,
+            (container) => {
+              container.addAllToScene();
+              engine.runRenderLoop(() => {
+                scene.render();
+              });
+            },
+            null,
+            (scene, message) => {
+              console.error("❌ Babylon.js Load Error:", message);
+            },
+            '.glb'
+          );
       } catch (error) {
         console.error('❌ GLBの読み込みに失敗しました:', error);
       }
