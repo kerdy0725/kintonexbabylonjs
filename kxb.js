@@ -1,4 +1,4 @@
-//2139
+//2320
 (function () {
     'use strict';
   
@@ -86,7 +86,9 @@
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
-        const fileBlob = await response.blob();
+
+          log('STEP2');
+          const fileBlob = await response.blob();
 //        const fileBlob = await client.file.downloadFile({ fileKey });
         log('fileBlob:', fileBlob);
 
@@ -96,7 +98,7 @@
   
         // STEP8: Babylon.jsでGLB読み込み
         BABYLON.SceneLoader.LoadAssetContainer(
-            'file:',
+            "",
             blobUrl,
             scene,
             (container) => {
