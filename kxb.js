@@ -121,6 +121,19 @@
             },
             '.glb'
           );
+                  // FireMaterialの代わりにParticleHelperの"fire"を使用
+        BABYLON.ParticleHelper.CreateAsync("fire", scene).then((set) => {
+            // パーティクルシステムの位置調整
+            set.systems.forEach(system => {
+                system.emitter = new BABYLON.Vector3(0, 0, 1.0); // FireMaterialのplaneと同じ位置に
+                system.minEmitBox = new BABYLON.Vector3(-5, -7.5, 0); // plane.scaling.xとyの半分の値を使用
+                system.maxEmitBox = new BABYLON.Vector3(5, 7.5, 0);
+                system.minSize = 5.0; // パーティクルのサイズを調整
+                system.maxSize = 10.0;
+            });
+            set.start(); // パーティクルの開始
+        });
+
       } catch (error) {
         console.error('❌ GLBの読み込みに失敗しました:', error);
       }
