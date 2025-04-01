@@ -1,4 +1,4 @@
-//2013
+//2023
 (function () {
     'use strict';
   
@@ -121,18 +121,58 @@
             },
             '.glb'
           );
-                  // FireMaterialの代わりにParticleHelperの"fire"を使用
-        BABYLON.ParticleHelper.CreateAsync("fire", scene).then((set) => {
-            // パーティクルシステムの位置調整
-            set.systems.forEach(system => {
-                system.emitter = new BABYLON.Vector3(0, 0, 1.0); // FireMaterialのplaneと同じ位置に
-                system.minEmitBox = new BABYLON.Vector3(-5, -7.5, 0); // plane.scaling.xとyの半分の値を使用
-                system.maxEmitBox = new BABYLON.Vector3(5, 7.5, 0);
-                system.minSize = 5.0; // パーティクルのサイズを調整
-                system.maxSize = 10.0;
-            });
-            set.start(); // パーティクルの開始
-        });
+
+          
+// パーティクルシステムの作成
+const particleSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
+particleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
+
+// パーティクルの放出位置（エミッター）の設定
+particleSystem.emitter = BABYLON.Vector3.Zero(); // 中心から放出
+
+// パーティクルの放出方向の設定
+particleSystem.minEmitBox = new BABYLON.Vector3(-1, -1, -1); // 放出位置の最小範囲
+particleSystem.maxEmitBox = new BABYLON.Vector3(1, 1, 1);    // 放出位置の最大範囲
+
+// パーティクルの色の設定
+particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+particleSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+particleSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+
+// パーティクルのサイズの設定
+particleSystem.minSize = 0.05;
+particleSystem.maxSize = 0.3;
+
+// パーティクルの寿命の設定
+particleSystem.minLifeTime = 0.3;
+particleSystem.maxLifeTime = 1.5;
+
+// 放出率の設定
+particleSystem.emitRate = 1000;
+
+// ブレンドモードの設定
+particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+
+// 重力の設定
+particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
+
+// パーティクルの方向の設定
+particleSystem.direction1 = new BABYLON.Vector3(-1, 1, -1);
+particleSystem.direction2 = new BABYLON.Vector3(1, 1, 1);
+
+// パーティクルの角度の設定
+particleSystem.minAngularSpeed = 0;
+particleSystem.maxAngularSpeed = Math.PI;
+
+// パーティクルの速度の設定
+particleSystem.minEmitPower = 0.2;
+particleSystem.maxEmitPower = 0.5;
+particleSystem.updateSpeed = 0.01;
+
+// パーティクルシステムの開始
+particleSystem.start();
+
+
 
       } catch (error) {
         console.error('❌ GLBの読み込みに失敗しました:', error);
