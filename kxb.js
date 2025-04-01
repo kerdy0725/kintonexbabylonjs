@@ -54,9 +54,20 @@
       // STEP4: Babylon.js初期化
       const engine = new BABYLON.Engine(canvas, true);
       const scene = new BABYLON.Scene(engine);
-      const camera = new BABYLON.ArcRotateCamera('camera', Math.PI / 2, Math.PI / 3, 2, BABYLON.Vector3.Zero(), scene);
+      const camera = new BABYLON.ArcRotateCamera('camera', Math.PI / 2, Math.PI / 4, 1.5, BABYLON.Vector3.Zero(), scene);
       camera.attachControl(canvas, true);
       new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), scene);
+
+      var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 1000.0}, scene);
+      var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+      skyboxMaterial.backFaceCulling = false;
+      skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://www.babylonjs.com/assets/skybox/nebula", scene);
+      skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+      skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+      skybox.material = skyboxMaterial;
+  
+
       log('🎥 STEP4: Babylonシーン作成');
   
       // STEP5: レコード取得とfileKey取得
@@ -74,7 +85,6 @@
       try {
         // STEP6: ファイルをBlobで取得
         const client = new KintoneRestAPIClient();
-        log('STEP1');
   
         const response = await fetch(`/k/v1/file.json?fileKey=${fileKey}`, {
             method: 'GET',
@@ -87,9 +97,7 @@
             throw new Error(`HTTP error! status: ${response.status}`);
           }
 
-          log('STEP2');
-          const fileBlob = await response.blob();
-//        const fileBlob = await client.file.downloadFile({ fileKey });
+        const fileBlob = await response.blob();
         log('fileBlob:', fileBlob);
 
         // STEP7: BlobをURLに変換
